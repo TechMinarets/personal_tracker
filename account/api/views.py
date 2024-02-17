@@ -1,4 +1,4 @@
-from rest_framework.generics import ListAPIView, ListCreateAPIView
+from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 
 from account.api.serializers import UserSerializer
 from account.models import User
@@ -13,6 +13,11 @@ class UserListView(ListCreateAPIView):
     def post(self, request, *args, **kwargs):
         print(request.user)
         return self.create(request, *args, **kwargs)
+
+class UserDetailView(RetrieveUpdateDestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
 # Compare this snippet from account/api/views.py:
 class UserCategoryListView(ListAPIView):
     serializer_class = CategorySerializer  # Use the modified serializer
@@ -29,6 +34,8 @@ class UserCategoryListView(ListAPIView):
 
         serializer = self.get_serializer(queryset, many=True)
         return super().get(request, *args, **kwargs)
+
+
 
 
 

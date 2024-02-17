@@ -18,4 +18,9 @@ urlpatterns = [
     #     view=views.CategoryTableView.as_view(),
     #     name='category-table'
     # )
+    path(
+        route='categories/<int:pk>/',
+        view=views.CategoryDetailView.as_view(),
+        name='category-detail'
+    ),
 ]
