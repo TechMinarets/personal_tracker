@@ -27,7 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     '0.0.0.0',
-    '10.100.161.25'
+    '10.100.161.25',
+    'localhost'
     
 ]
 
@@ -46,6 +47,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'account',
     'category',
+    'openai',
 ]
 
 MIDDLEWARE = [
