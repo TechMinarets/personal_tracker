@@ -14,7 +14,7 @@ class ChatHistoryAdmin(admin.ModelAdmin):
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ['name', 'user', 'messages', 'table', 'created_at', 'modified_at']
+    list_display = ['name', 'user',  'table', 'created_at', 'modified_at']
     list_filter = ['name', 'user', 'created_at', 'modified_at']
     ordering = ['name', 'user', 'created_at', 'modified_at']
     search_fields = ['name', 'user', 'created_at', 'modified_at']

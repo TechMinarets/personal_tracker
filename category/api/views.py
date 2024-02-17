@@ -4,6 +4,26 @@ from category.api.serializers import CategorySerializer, CategoryChatHistorySeri
 from category.models import Category, ChatHistory
 from rest_framework.permissions import AllowAny
 
+# import os
+# from dotenv import load_dotenv
+# # from google.generativeai import genai
+# # load_dotenv()
+
+# # genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+# # model = genai.GenerativeModel('gemini-pro')
+
+# import google.generativeai as genai
+# import os
+# from dotenv import load_dotenv
+# from datetime import datetime
+# load_dotenv()
+# genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+
+# model = genai.GenerativeModel('gemini-pro')
+
+
+
+
 class CategoryListView(ListCreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
@@ -21,12 +41,12 @@ class CategoryDetailView(RetrieveUpdateDestroyAPIView):
 
 
 
-class CategoryMessageView(RetrieveUpdateDestroyAPIView):
+class CategoryMessageView(ListCreateAPIView):
     permission_classes = [AllowAny]
     serializer_class = CategoryChatHistorySerializer
 
-    def get_object(self):
-        return Category.objects.filter(id=self.kwargs['pk']).first().messages
+    def get_queryset(self, *args, **kwargs):
+        return ChatHistory.objects.filter(category=self.kwargs['category_id'])
     
     def patch(self, request, *args, **kwargs):
         try:

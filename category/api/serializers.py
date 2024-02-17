@@ -7,6 +7,12 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = '__all__'
 
+class ChatHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ChatHistory
+        fields = '__all__'
+
+
 
 class CategoryChatHistorySerializer(serializers.ModelSerializer):
     class Meta:

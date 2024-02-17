@@ -9,7 +9,7 @@ urlpatterns = [
         name='category-list'
     ),
     path(
-        route='categories/<int:pk>/chat-history',
+        route='<int:category_id>/chat-history',
         view=views.CategoryMessageView.as_view(),
         name='category-messages'
     ),
@@ -22,5 +22,5 @@ urlpatterns = [
         route='categories/<int:pk>/',
         view=views.CategoryDetailView.as_view(),
         name='category-detail'
-    ),
+    )
 ]
