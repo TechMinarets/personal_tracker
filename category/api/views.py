@@ -3,7 +3,7 @@ from category.api.serializers import CategorySerializer, CategoryChatHistorySeri
 from category.models import Category, ChatHistory
 from rest_framework.permissions import AllowAny
 
-class CategoryListView(ListAPIView):
+class CategoryListView(ListCreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
