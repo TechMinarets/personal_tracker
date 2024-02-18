@@ -22,5 +22,10 @@ urlpatterns = [
         route='categories/<int:pk>/',
         view=views.CategoryDetailView.as_view(),
         name='category-detail'
+    ),
+    path(
+        route='categories/<int:pk>/table',
+        view=views.CategoryTableView.as_view(),
+        name='category-table'
     )
 ]

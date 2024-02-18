@@ -1,7 +1,9 @@
-from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView
+import json
+
+from rest_framework.generics import GenericAPIView, ListCreateAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView
 from account.models import User
 from category.api.serializers import CategorySerializer, CategoryChatHistorySerializer
-from category.api.utils import generate_response
+from category.api.utils import generate_response, analyze_table_total_expenses
 from category.models import Category, ChatHistory
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -31,8 +33,11 @@ class CategoryListView(ListCreateAPIView):
 
     def post(self, request, *args, **kwargs):
         try:
-            request.data['user'] = User.objects.filter(uuid=request.data['user']).first().id
-        except:
+            user = User.objects.get(uuid=request.data['user'])
+            category = Category(name=request.data['name'], user=user)
+            category.save()
+        except Exception as e:
+            print(e)
             pass
         return super().post(request, *args, **kwargs)
 
@@ -58,23 +63,30 @@ class CategoryMessageView(ListCreateAPIView):
 
         response = generate_response(category_name, previous_history, prompt)
 
-
-
         chat_history_data = {
             'category': request.data['category'],
             'prompt': prompt,
-            'response': response,
+            'response': str(response),
         }
 
         try:
+            if 'response' in response:
+                chat_history_data['response'] = response['response']
+        except:
+            pass
+
+        try:
             if response['type'] == 'table':
-                chat_history_data['summary_response'] = response['summary_response']
+                if 'summary_response' in response:
+                    chat_history_data['response'] = response['summary_response']
+
                 category_instance = Category.objects.get(id=category)
                 category_instance.table = str(response['updated_table_json_data'])
                 category_instance.save()
         except:
             chat_history_data['error']: 'Could not save table'
 
+        chat_history_data
         chat_history_serializer = CategoryChatHistorySerializer(data=chat_history_data)
         if chat_history_serializer.is_valid():
             chat_history_serializer.save()
@@ -82,13 +94,7 @@ class CategoryMessageView(ListCreateAPIView):
             # Handle validation errors if needed
             pass
 
-        return Response({
-            'prompt': prompt,
-            'response': response,
-            'category': request.data['category'],
-            'previous_history': previous_history,
-            'updated_history': Category.objects.get(id=category).table
-        })
+        return Response(chat_history_data)
 
     def patch(self, request, *args, **kwargs):
         try:
@@ -98,5 +104,21 @@ class CategoryMessageView(ListCreateAPIView):
         return super().patch(request, *args, **kwargs)
 
 
-class CategoryTableView:
-    pass
+def response_to_json(response_text):
+    return json.loads(response_text)
+
+
+class CategoryTableView(GenericAPIView):
+    def get(self, request, *args, **kwargs):
+        table = Category.objects.filter(id=self.kwargs['pk']).first().table
+        table_json = table.replace("'", "\"")
+
+        total_expenses = analyze_table_total_expenses(table_json)
+
+        return Response(
+            {
+                'table': response_to_json(table_json),
+                'total_expenses': total_expenses
+            }
+
+        )

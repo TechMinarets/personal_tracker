@@ -83,3 +83,26 @@ For updating the table, provide the updated table in the JSON format:
         pass
 
     return response.choices[0].message.content
+
+
+def analyze_table_total_expenses(table_json):
+    openai_api_key = os.getenv('OPENAI_API_KEY')
+    openai_model = os.getenv('OPENAI_MODEL')
+
+    client = OpenAI(api_key=openai_api_key)
+
+    questions = [
+        {
+            'role': 'system',
+            'content': f"Previous history/table JSON:\n{table_json}"
+        },
+        {
+            'role': 'system',
+            'content': "The user wants to know the total expenses from the table/history if exists. the default monetary unit is Taka (BDT)"
+        }
+    ]
+
+    response = client.chat.completions.create(model='gpt-4', messages=questions)
+
+    return response.choices[0].message.content
+
